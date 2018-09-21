@@ -1,10 +1,12 @@
 'use strict';
 
-const { printMessage, printErrorMessage } = require('../messages');
 const shell = require('shelljs');
 const git = require('simple-git/promise');
 const path = require('path');
 const fs = require('fs');
+const inquirer = require('inquirer');
+
+const { printMessage, printErrorMessage } = require('../messages');
 
 module.exports = function(command, repo_type, options) {
   switch (command) {
@@ -28,16 +30,16 @@ function add(repo_type, options) {
   }
 }
 
-function addLambdaGithooks(options) {
-  if (options === undefined || options === 'all' || options === '.') {
-    addPreCommits();
-  }
-  else {
-    addPreCommits();
-  }
+async function addLambdaGithooks(options) {
+  addHooks([
+    'pre-commit',
+    'autohide-secret.pre-commit',
+    'pre-push',
+    'deployLambda.pre-push'
+  ]);
 }
 
-async function addPreCommits() {
+async function addHooks(hooks) {
   try {
     const cwd = shell.pwd().toString();
     const isRepo = await git(cwd).checkIsRepo();
@@ -47,11 +49,22 @@ async function addPreCommits() {
       const hookFolderFiles = fs.readdirSync(hookFolderPath);
 
       if (hookFolderFiles.length) {
-        if (hookFolderFiles.includes('pre-commit'))
-          return printErrorMessage('pre-commit already exists');
+        for (let i = 0; i < hooks.length; i++) {
+          const hook = hooks[i];
+          if (hookFolderFiles.includes(hook)) {
+            try {
+              const answers = await inquirer.prompt(hookAlreadyExistPrompt(hook));
+              if (!answers.hookAlreadyExists)
+                continue;
+            } catch (error) {
+              return printErrorMessage(error);
+            }
+          }
 
-        fs.copyFileSync(path.resolve(__dirname, './githooks/pre-commit'), hookFolderPath + 'pre-commit');
-        //printMessage(preCommit);
+          fs.copyFileSync(path.resolve(__dirname, `./githooks/${hook}`), `${hookFolderPath}${hook}`);
+          shell.exec(`chmod a+x ${hookFolderPath}${hook}`);
+          printMessage(`Copied ${hook} to your githooks and made it an executable file`);
+        }
       }
       else
         printErrorMessage(`hooks folder not found`);
@@ -61,4 +74,16 @@ async function addPreCommits() {
   } catch (error) {
     printErrorMessage(error);
   }
+}
+
+function hookAlreadyExistPrompt(hook) {
+   return [
+    {
+      type: 'confirm',
+      name: 'hookAlreadyExists',
+      message: `${hook} already exists. Do you want to overwrite it?`,
+      default: 'n',
+      choices: ['Y', 'n']
+    }
+  ]
 }

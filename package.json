@@ -1,5 +1,5 @@
 {
-  "name": "cli_levarne",
+  "name": "@levarne/cli",
   "version": "1.0.0",
   "description": "LeVarne CLI",
   "main": "index.js",
@@ -10,7 +10,7 @@
     "CLI",
     "LeVarne"
   ],
-  "author": "Niels van Bree <niels@levarne.nl>",
+  "author": "Niels van Bree <niels@levarne.nl> (",
   "license": "ISC",
   "repository": "https://github.com/LeVarneBV/CLI",
   "bin": {

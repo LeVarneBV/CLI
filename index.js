@@ -1,14 +1,10 @@
 #!/usr/bin/env node
 'use strict';
 
-const shell = require('shelljs');
-const inquirer = require('inquirer');
-
 const { printMessage, printErrorMessage } = require('./messages');
 const git = require('./git');
 
 const [,, ...args] = process.argv;
-const command = args.join(" ");
 
 switch (args[0]) {
   case undefined:
