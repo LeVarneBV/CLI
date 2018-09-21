@@ -51,9 +51,11 @@ async function addHooks(hooks) {
       if (hookFolderFiles.length) {
         for (let i = 0; i < hooks.length; i++) {
           const hook = hooks[i];
+          const localHook = path.resolve(__dirname, `./githooks/${hook}`);
+
           if (hookFolderFiles.includes(hook)) {
             try {
-              const answers = await inquirer.prompt(hookAlreadyExistPrompt(hook));
+              const answers = await inquirer.prompt(promptHookAlreadyExists(hook));
               if (!answers.hookAlreadyExists)
                 continue;
             } catch (error) {
@@ -61,7 +63,16 @@ async function addHooks(hooks) {
             }
           }
 
-          fs.copyFileSync(path.resolve(__dirname, `./githooks/${hook}`), `${hookFolderPath}${hook}`);
+          if (hook === 'deployLambda.pre-push') {
+            try {
+              await changeFileContentAndWriteToDest(localHook, `${hookFolderPath}${hook}`);
+            } catch (error) {
+              return;
+            }
+          }
+          else
+            fs.copyFileSync(localHook, `${hookFolderPath}${hook}`);
+
           shell.exec(`chmod a+x ${hookFolderPath}${hook}`);
           printMessage(`Copied ${hook} to your githooks and made it an executable file`);
         }
@@ -76,7 +87,21 @@ async function addHooks(hooks) {
   }
 }
 
-function hookAlreadyExistPrompt(hook) {
+async function changeFileContentAndWriteToDest(file, dest) {
+  const answers = await inquirer.prompt(promptAWSDetails());
+
+  if (!answers.accountId || answers.accountId === '' || !answers.apiKeyId || answers.apiKeyId === '') {
+    printErrorMessage('Missing AWS account id or API Key id, so this hook is not copied to your githooks folder');
+    throw new Error({code: 400, message: 'Missing AWS account id or API Key id, so this hook is not copied to your githooks folder'});
+  }
+  
+  const content = fs.readFileSync(file, 'utf-8');
+  const newContent = (content.replace(/^(ACCOUNT_ID=)/gim, `ACCOUNT_ID=${answers.accountId}`)).replace(/^(API_ID=)/gim, `API_ID=${answers.apiKeyId}`);
+
+  fs.writeFileSync(dest, newContent, 'utf-8');
+}
+
+function promptHookAlreadyExists(hook) {
    return [
     {
       type: 'confirm',
@@ -86,4 +111,19 @@ function hookAlreadyExistPrompt(hook) {
       choices: ['Y', 'n']
     }
   ]
+}
+
+function promptAWSDetails() {
+  return [
+   {
+     type: 'input',
+     name: 'accountId',
+     message: 'Account id of AWS account?'
+   },
+   {
+    type: 'input',
+    name: 'apiKeyId',
+    message: 'API Gateway id of AWS account?'
+  }
+ ]
 }
