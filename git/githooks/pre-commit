@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+for precommit in "${0%/*}"/*.pre-commit; do
+  $precommit
+done

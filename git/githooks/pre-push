@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+for prepush in "${0%/*}"/*.pre-push; do
+  $prepush
+done

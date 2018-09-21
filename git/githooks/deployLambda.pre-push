@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# PROJECT SPECIFICATION
+ACCOUNT_ID=
+API_ID=
+# PREPERATION
+START_DIR=$PWD
+ROOT_DIR=$(git rev-parse --show-toplevel)
+BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
+if [ $BRANCH_NAME = development ]
+then
+  DEPLOY_ENV=development
+elif [ $BRANCH_NAME = master ]
+then
+  DEPLOY_ENV=production
+else
+  exit 0
+fi
+AWS_ENVIRONMENT=$DEPLOY_ENV
+FUNCTION_START="arn:aws:lambda:eu-west-1:${ACCOUNT_ID}:function:"
+SOURCE_ARN="arn:aws:execute-api:eu-west-1:${ACCOUNT_ID}:${API_ID}/${DEPLOY_ENV}/*"
+# DEPLOY STAGE
+CHANGED_DIRS=$(git diff --name-only origin/$DEPLOY_ENV $DEPLOY_ENV | grep -oP '^[[:upper:]][A-Za-z0-9]*?/[A-Za-z0-9]*(?=/)' | awk '!seen[$0]++')
+if [ -n "$CHANGED_DIRS" ]; then
+  exec < /dev/tty
+  echo "Changed lambda's detected: "
+  for DIR in $CHANGED_DIRS; do
+    echo "  $DIR"
+  done
+  read -p "Do you want to deploy all? (Y/[n]): " DEPLOY_ALL;
+  for CHANGED_DIR in $CHANGED_DIRS; do
+    if [ "y" != "$DEPLOY_ALL" ]; then
+      read -p "Deploy $CHANGED_DIR? ([Y]/n): " DEPLOY_THIS;
+    fi
+    if [ "y" = "$DEPLOY_ALL" ] || [ "n" != "$DEPLOY_THIS" ]; then
+      cd $ROOT_DIR/$CHANGED_DIR
+      source .env
+      AWS_ENVIRONMENT=$DEPLOY_ENV
+      node-lambda deploy &&
+      aws lambda add-permission --function-name $FUNCTION_START${CHANGED_DIR##*/}"-"$DEPLOY_ENV --source-arn $SOURCE_ARN --principal apigateway.amazonaws.com --statement-id $DEPLOY_ENV --action lambda:InvokeFunction
+# Uncomment next 2 lines to force deploy all before push
+#    else
+#      exit 1 
+    fi
+  done
+  cd $START_DIR
+  exec <&-;
+fi
+exit 0
