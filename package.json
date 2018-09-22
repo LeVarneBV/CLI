@@ -10,7 +10,7 @@
     "CLI",
     "LeVarne"
   ],
-  "author": "Niels van Bree <niels@levarne.nl> (",
+  "author": "Niels van Bree <niels@levarne.nl> (http://levarne.com)",
   "license": "ISC",
   "repository": "https://github.com/LeVarneBV/CLI",
   "bin": {
