@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+for postmerge in "${0%/*}"/*.post-merge; do
+  $postmerge
+done
