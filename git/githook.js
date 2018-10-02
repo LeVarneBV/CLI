@@ -35,7 +35,9 @@ async function addLambdaGithooks(options) {
     'pre-commit',
     'autohide-secret.pre-commit',
     'pre-push',
-    'deployLambda.pre-push'
+    'deployLambda.pre-push',
+    'post-merge',
+    'autorevealsecrets.post-merge'
   ]);
 }
 
