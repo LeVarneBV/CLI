@@ -1,6 +1,6 @@
 {
   "name": "@levarne/cli",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "LeVarne CLI",
   "main": "index.js",
   "scripts": {
