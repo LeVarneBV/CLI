@@ -19,7 +19,7 @@ AWS_ENVIRONMENT=$DEPLOY_ENV
 FUNCTION_START="arn:aws:lambda:eu-west-1:${ACCOUNT_ID}:function:"
 SOURCE_ARN="arn:aws:execute-api:eu-west-1:${ACCOUNT_ID}:${API_ID}/${DEPLOY_ENV}/*"
 # DEPLOY STAGE
-CHANGED_DIRS=$(git diff --name-only origin/$DEPLOY_ENV $DEPLOY_ENV | grep -oP '^[[:upper:]][A-Za-z0-9]*?/[A-Za-z0-9]*(?=/)' | awk '!seen[$0]++')
+CHANGED_DIRS=$(git diff --name-only origin/$BRANCH_NAME $BRANCH_NAME | grep -oP '^[[:upper:]][A-Za-z0-9]*?/[A-Za-z0-9]*(?=/)' | awk '!seen[$0]++')
 if [ -n "$CHANGED_DIRS" ]; then
   exec < /dev/tty
   echo "Changed lambda's detected: "
