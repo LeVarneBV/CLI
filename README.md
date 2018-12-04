@@ -17,6 +17,7 @@ LeVarne githook add lambda
 ```
 
 Currently, githooks can't be deleted through the CLI yet, so if you want to delete them, you will have to do this manually.
+In case you want to use git checkout without revealing secrets, you can use NO_REVEAL=true git checkout.
 
 ### Git secret
 In case of a merge conflict in .env files, we will get the conflict in a decrypted file (.secret extension). Because there is no easy way of knowing what exactly is different between the 2 commits, the following command will decrypt both versions, compare them and show you the merge conflict as usual in the conflicted file.

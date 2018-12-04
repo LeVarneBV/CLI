@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+for postcheckout in "${0%/*}"/*.post-checkout; do
+  $postcheckout
+done

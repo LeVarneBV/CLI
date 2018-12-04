@@ -37,7 +37,9 @@ async function addLambdaGithooks(options) {
     'pre-push',
     'deployLambda.pre-push',
     'post-merge',
-    'autorevealsecrets.post-merge'
+    'autorevealsecrets.post-merge',
+    'post-checkout',
+    'autorevealsecrets.post-checkout'
   ]);
 }
 
