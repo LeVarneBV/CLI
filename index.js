@@ -1,10 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 
-const { printMessage, printErrorMessage } = require('./messages');
-const git = require('./git');
 const shell = require('shelljs');
 const path = require('path');
+
+const { printMessage, printErrorMessage } = require('./messages');
+
+const git = require('./git');
+const basics = require('./basics');
 
 const [,, ...args] = process.argv;
 
@@ -17,6 +20,8 @@ switch (args[0]) {
     git.githook(args[1], args[2], args[3]); break;
   case 'secret-conflicts':
     shell.exec(path.resolve(__dirname, './git/secret-conflicts')); break;
+  case 'basics':
+    basics(args[1], args[2], args[3]); break;
   default: 
     printErrorMessage(`${args[0]} is not a supported command. See LeVarne --help for help`);
 }

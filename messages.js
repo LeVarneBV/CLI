@@ -10,7 +10,7 @@ module.exports = {
 }
 
 function printMessage(text) {
-  process.stdout.write(text + '\n');
+  process.stdout.write(chalk.green(text + '\n'));
 }
 
 function printErrorMessage(text) {
