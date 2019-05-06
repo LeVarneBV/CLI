@@ -9,6 +9,13 @@ npm install -g @levarne/cli
 
 ## Commands
 
+### Basics
+We can import project folders from the remote LeVarne basics repo through the CLI. You can optionally specify a version number if you want to import a previous version of a project (e.g. Ionic 3 iso Ionic 4).
+
+```
+LeVarne basics init <project> [version]
+```
+
 ### Githooks
 We currently have some githooks to make it easier to work with Lambda repos, such as a pre-commit hook that will use git secret automatically on the background. These githooks can be added to your repo with the command below.
 
@@ -16,7 +23,7 @@ We currently have some githooks to make it easier to work with Lambda repos, suc
 LeVarne githook add lambda
 ```
 
-Currently, githooks can't be deleted through the CLI yet, so if you want to delete them, you will have to do this manually.
+As of this moment, githooks can't be deleted through the CLI yet, so if you want to delete them, you will have to do this manually.
 In case you want to use git checkout without revealing secrets, you can use NO_REVEAL=true git checkout.
 
 ### Git secret
