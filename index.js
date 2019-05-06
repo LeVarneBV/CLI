@@ -3,7 +3,9 @@
 
 const shell = require('shelljs');
 const path = require('path');
+const program = require('commander');
 
+const pkg = require('./package.json');
 const { printMessage, printErrorMessage } = require('./messages');
 
 const git = require('./git');
@@ -14,7 +16,11 @@ const [,, ...args] = process.argv;
 switch (args[0]) {
   case undefined:
     printErrorMessage(`No command given. See LeVarne --help for help`); break;
+  case '--version':
+  case '-v': 
+    printMessage(pkg.version); break;
   case '--help':
+  case '-h':
     help(); break;
   case 'githook':
     git.githook(args[1], args[2], args[3]); break;
@@ -27,7 +33,17 @@ switch (args[0]) {
 }
 
 function help() {
-  const text = `Currently supported commands: 
-    - githook`;
+  const text = `Usage: le/LeVarne [--version] [--help] <command> [<args>]
+
+Currently supported commands:
+
+Commands that have to do with git-secrets
+  githook           Add githooks to your git repo that work well with git-secrets
+  secret-conflicts  Exports conflicts in decrypted secret files to encrypted secret files
+
+Commands that have to do with setting up projects
+  basics\t Initialize new projects like NodeJS, Ionic or Lambda functions
+  
+See le/LeVarne --help <command> to read about specific subcommands`;
   printMessage(text);
 }

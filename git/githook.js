@@ -12,6 +12,9 @@ module.exports = function(command, repo_type, options) {
   switch (command) {
     case undefined:
       printErrorMessage(`No subcommand given. See LeVarne githook --help for more information on this command`); break;
+    case '--help':
+    case '-h': 
+      help(); break;
     case 'add':
       add(repo_type, options); break;
     default:
@@ -22,11 +25,11 @@ module.exports = function(command, repo_type, options) {
 function add(repo_type, options) {
   switch (repo_type) {
     case undefined:
-      printErrorMessage(`No repo type given. To know which githooks need to be added, use LeVarne githook add [lambda | basics] [options]`); break;
+      printErrorMessage(`No repo type given. To know which githooks need to be added, use LeVarne githook add <lambda> [options]`); break;
     case 'lambda':
       addLambdaGithooks(options); break; 
     default:
-      printErrorMessage(`${repo_type} is not a known git repo type. Use LeVarne githook add [lambda | basics] [options]`); break;
+      printErrorMessage(`${repo_type} is not a known git repo type. Use LeVarne githook add <lambda> [options]`); break;
   }
 }
 
@@ -130,4 +133,12 @@ function promptAWSDetails() {
     message: 'API Gateway id of AWS account?'
   }
  ]
+}
+
+function help() {
+  const text = `Usage: le/LeVarne githook [--help] <command> [<args>]
+
+Subcommands for the githook command:
+  add lambda  Adds git-secrets githooks to a Lambda repo`;
+  printMessage(text);
 }
