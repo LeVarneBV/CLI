@@ -29,7 +29,7 @@
     "lodash": "^4.17.11",
     "minimist": "^1.2.0",
     "shelljs": "^0.8.2",
-    "simple-git": "^1.100.0",
+    "simple-git": "^3.5.0",
     "touch": "^3.1.0"
   }
 }
